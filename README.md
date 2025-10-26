@@ -119,6 +119,8 @@ Additionally, this course includes critical thinking and reviews of AI applicati
   - Function Calling an external API
   - Function Calling with your local REST API
   - ***LAB: AI Reporter with Function Calling***
+  - READINGS:
+    - [Tool Calling with LangChain}](https://python.langchain.com/docs/concepts/tool_calling/)
 
 
 - **Module 07: Retrieval Augmented Generation**
@@ -190,50 +192,4 @@ Additionally, this course includes critical thinking and reviews of AI applicati
 
 Reach out via Canvas or use EdDiscussion. You're not expected to know everything upfront — the point is to **try**, **fail**, **fix**, and **learn**!
 
-
 ---
-
-# 📁 Repository Structure & Quick Links
-
-
-Below are the main components of this repository. Click any folder or script name to view it on GitHub.
-
-- [setup/](https://github.com/timothyfraser/foundations/tree/main/setup) — **Setup Scripts & Instructions**
-  - [dependencies.sh](https://github.com/timothyfraser/foundations/tree/main/setup/dependencies.sh) — Installs all R and Python dependencies
-  - [README.md](https://github.com/timothyfraser/foundations/tree/main/setup/README.md) — Setup checklist
-
-
-- [query_api/](https://github.com/timothyfraser/foundations/tree/main/query_api) — **Query an API**
-  - Example scripts for making API calls using curl, Python, and R
-  - [01_example_curl.sh](https://github.com/timothyfraser/foundations/tree/main/query_api/01_example_curl.sh)
-  - [02_example_python.py](https://github.com/timothyfraser/foundations/tree/main/query_api/02_example_python.py)
-  - [02_example_r.R](https://github.com/timothyfraser/foundations/tree/main/query_api/02_example_r.R)
-  - See [query_api/README.md](https://github.com/timothyfraser/foundations/tree/main/query_api/README.md) for usage.
-
-- [query_ai/](https://github.com/timothyfraser/foundations/tree/main/query_ai) — **Query a Local LLM (AI Model)**
-  - Scripts to run and query a local LLM (e.g., Gemma) via LM Studio
-  - [00_your_first_query.sh](https://github.com/timothyfraser/foundations/tree/main/query_ai/00_your_first_query.sh)
-  - [01_startup.sh](https://github.com/timothyfraser/foundations/tree/main/query_ai/01_startup.sh)
-  - [01_workflow.py](https://github.com/timothyfraser/foundations/tree/main/query_ai/01_workflow.py)
-  - [01_workflow.R](https://github.com/timothyfraser/foundations/tree/main/query_ai/01_workflow.R)
-  - See [query_ai/README.md](https://github.com/timothyfraser/foundations/tree/main/query_ai/README.md) for setup and usage.
-
-
-- [images/](https://github.com/timothyfraser/foundations/tree/main/images) — Images for documentation
-
----
-
-## 🚀 Project Areas
-
-### 1. Query a REST API
-Learn to query public/private REST APIs in real time via reproducible code protocols, like the US Census, PurpleAir, and more.
-
-### 1. Query a Generative AI Model
-Learn to interact with LLM APIs, including local models (Gemma, LLaMA) and cloud APIs (OpenAI, Gemini). See [query_ai/](https://github.com/timothyfraser/foundations/tree/main/query_ai).
-
-### 2. Build a REST API to Query Results
-Connect your data and models through a local or hosted REST API. See [apps/](https://github.com/timothyfraser/foundations/tree/main/apps) for both Python (FastAPI) and R (plumber) examples.
-
----
-
-
