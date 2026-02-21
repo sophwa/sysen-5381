@@ -39,6 +39,11 @@ This deployment folder contains three essential files:
 - 🐳 `dockerfile` - Instructions for containerizing your app
 - 📚 `README.md` - This tutorial
 
+
+<br>
+
+---
+
 ## 🔧 Step 1: Prepare Your Plumber API
 
 Your Plumber API is already set up in `plumber.R`. This file contains:
@@ -48,6 +53,10 @@ Your Plumber API is already set up in `plumber.R`. This file contains:
 - 🧮 A sum endpoint (`/sum`) that adds two numbers
 
 The API uses the `plumber` package and includes proper serialization for JSON responses.
+
+<br>
+
+---
 
 ## 🐳 Step 2: Understanding the Dockerfile
 
@@ -84,6 +93,11 @@ CMD ["/app/plumber.R"]
    git push origin main
    ```
 
+<br>
+
+---
+
+
 ## ☁️ Step 4: Deploy to DigitalOcean App Platform
 
 ### 4.1 🆕 Create a New App
@@ -112,6 +126,10 @@ CMD ["/app/plumber.R"]
 2. ✅ **Click "Create Resources"**
 3. ⏰ **Wait for deployment** (this may take 5-10 minutes)
 
+<br>
+
+---
+
 ## 🧪 Step 5: Test Your Deployed API
 
 Once deployment is complete:
@@ -135,6 +153,9 @@ Once deployment is complete:
         -H "Content-Type: application/json" \
         -d '{"a": 5, "b": 3}'
    ```
+<br>
+
+---
 
 ## 📊 Step 6: Monitor and Manage Your App
 
@@ -153,6 +174,10 @@ Once deployment is complete:
 - 🚀 Add more instances for better performance
 - 🌐 Set up custom domains if needed
 
+<br>
+
+---
+
 ## 🔧 Troubleshooting Common Issues
 
 ### 🚫 App Won't Start
@@ -168,6 +193,10 @@ Once deployment is complete:
 ### 📦 Package Installation Errors
 - ➕ Add missing packages to the `RUN` command in your Dockerfile
 - 🧩 Some packages may require system dependencies
+
+<br>
+
+---
 
 ## 💰 Cost Considerations
 

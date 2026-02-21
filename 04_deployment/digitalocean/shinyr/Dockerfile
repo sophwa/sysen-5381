@@ -1,6 +1,6 @@
 # Minimal Shiny for R on DigitalOcean App Platform
-# Base: Posit's official rstudio/shiny image
-FROM rstudio/shiny:latest
+# Base: Posit's official rocker/shiny image
+FROM rocker/shiny:latest
 
 WORKDIR /app
 
