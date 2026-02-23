@@ -128,7 +128,7 @@ shiny run 02_productivity/shiny_app/app.py
 Alternatively, you can run it as a module:
 
 ```bash
-python -m 02_productivity.shiny_app.app
+python3 02_productivity/shiny_app/app.py
 ```
 
 Then open the URL printed in the terminal (typically `http://localhost:8000`) in your browser.

@@ -15,8 +15,14 @@
 
 from shiny import App  # main Shiny application object
 
-from .server import server  # server logic
-from .ui_components import app_ui  # UI layout
+# Note on imports:
+# This app is typically launched using:
+#   shiny run 02_productivity/shiny_app/app.py
+# In that mode, Shiny imports this file in a way that does not always support
+# package-style relative imports (like `from .server import server`).
+# We therefore use same-folder imports.
+from server import server  # server logic
+from ui_components import app_ui  # UI layout
 
 
 ## 1. Create App ###############################

@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt  # for plotting in Shiny
 import pandas as pd  # for type hints and clarity
 from shiny import render, reactive  # Shiny server tools
 
-from .ai_reporting import generate_ai_report  # AI reporting helper
-from .utils import (  # reusable helper functions
+from ai_reporting import generate_ai_report  # AI reporting helper
+from utils import (  # reusable helper functions
     compute_quarter_returns,
     fetch_marketstack_eod,
     get_quarter_and_dates,

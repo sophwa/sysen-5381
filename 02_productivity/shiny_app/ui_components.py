@@ -15,7 +15,7 @@
 
 from shiny import ui  # core Shiny UI components
 
-from .utils import get_tech_symbols, get_quarter_configs  # shared helpers
+from utils import get_tech_symbols, get_quarter_configs  # shared helpers
 
 
 ## 1. Define UI ###############################
