@@ -14,13 +14,35 @@ It lets you:
 - **Fetch end‑of‑day price data from Marketstack** on demand.
 - **Compute simple buy‑and‑hold returns** over the selected quarter.
 - **Compare performance** across companies using a bar chart and a summary table.
+- **Generate an AI‑written executive summary** of the quarterly performance using an Ollama cloud model.
 
 The app is structured to match best practices for Shiny:
 
 - `app.py` – main entry point and Shiny `App` object.
 - `ui_components.py` – UI layout and inputs/outputs.
-- `server.py` – reactive server logic and rendering.
+- `server.py` – reactive server logic and rendering (including AI summary output).
 - `utils.py` – API helpers and data transformation functions.
+- `ai_reporting.py` – helper that calls an Ollama cloud model to generate the AI summary.
+
+---
+
+## Data Summary
+
+The core API data comes from the **Marketstack** `/v1/eod` endpoint and is transformed into a tidy table of quarterly returns. Key columns:
+
+```markdown
+| Column Name | Type    | Description                                                     |
+|------------|---------|-----------------------------------------------------------------|
+| symbol     | string  | Stock ticker symbol (e.g., `AAPL`, `MSFT`, `GOOGL`).            |
+| date       | date    | Trading date for each end‑of‑day (EOD) price from Marketstack.  |
+| adj_close  | float   | Adjusted closing price for the symbol on `date`.                |
+| start_date | date    | First trading date in the selected quarter for each `symbol`.   |
+| end_date   | date    | Last trading date in the selected quarter for each `symbol`.    |
+| return_pct | float   | Buy‑and‑hold return over the quarter (0.10 = 10% gain).         |
+| quarter    | string  | Human‑readable label, e.g., `Q4 2025 (Oct–Dec)`.                |
+```
+
+The Shiny app uses `symbol`, `start_date`, `end_date`, `return_pct`, and `quarter` for visualization, and passes the same summary data into `ai_reporting.py` to construct an AI‑friendly prompt.
 
 ---
 
@@ -59,7 +81,7 @@ This app uses the **Marketstack** end‑of‑day endpoint:
   - `date_from` / `date_to` – ISO‑formatted dates for the selected quarter.
   - `limit` – maximum number of returned records.
 
-**API key setup:**
+**API key setup (Marketstack):**
 
 1. Create a Marketstack account and obtain an API key.
 2. In the `dsai` project root (same level as `01_query_api` and `02_productivity`), create a `.env` file.
@@ -72,6 +94,26 @@ access_key=YOUR_MARKETSTACK_KEY_HERE
 4. Save the file; do not commit `.env` to version control.
 
 The app uses `python-dotenv` to load this key in `[utils.py](utils.py)` before making requests.
+
+**AI API key setup (Ollama cloud):**
+
+The AI executive summary uses an Ollama cloud model via HTTPS:
+
+- **Endpoint:** `https://ollama.com/api/chat`  
+- **Model:** `gpt-oss:20b-cloud` (configured in `ai_reporting.py`)
+
+To enable AI reporting:
+
+1. Obtain an Ollama cloud API key.
+2. In the same `.env` file in the project root, add:
+
+   ```text
+   OLLAMA_API_KEY=YOUR_OLLAMA_KEY_HERE
+   ```
+
+3. Save the file (do **not** commit `.env`).
+
+If `OLLAMA_API_KEY` is missing or invalid, the Shiny app will still run, but the AI summary pane will show a friendly error message instead of a report.
 
 ---
 
@@ -120,10 +162,15 @@ Then open the URL printed in the terminal (typically `http://localhost:8000`) in
    - **Quarterly Returns – Table:**
      - Lists `symbol`, `start_date`, `end_date`, `return_pct` (in %), and `quarter`.
      - Useful for checking exact values behind the chart.
+   - **AI‑Generated Executive Summary:**
+     - Uses the same quarterly returns data to produce a short narrative report.
+     - Helpful for quickly explaining which companies out‑ or under‑performed.
+     - Always verify the narrative against the chart and table.
 
 5. **Common errors**
    - **Missing API key:** Ensure `.env` exists in the project root and includes `access_key=...`.
    - **No data returned:** Check that your key is valid and that the selected symbols/quarter are supported by your Marketstack plan.
+   - **AI summary error:** Ensure `.env` includes `OLLAMA_API_KEY=...` and that your Ollama key is valid. If the AI call fails, the status text will explain why.
 
 ---
 

@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt  # for plotting in Shiny
 import pandas as pd  # for type hints and clarity
 from shiny import render, reactive  # Shiny server tools
 
+from .ai_reporting import generate_ai_report  # AI reporting helper
 from .utils import (  # reusable helper functions
     compute_quarter_returns,
     fetch_marketstack_eod,
@@ -39,12 +40,17 @@ def server(input, output, session):
 
     # Store the latest error message (if any) in a reactive value
     last_error: reactive.Value[Optional[str]] = reactive.Value(None)
+    # Store the latest AI report (if any) and AI-specific error
+    ai_report_text: reactive.Value[Optional[str]] = reactive.Value(None)
+    ai_error: reactive.Value[Optional[str]] = reactive.Value(None)
 
     @reactive.event(input.run_query)
     def _fetch_and_compute() -> pd.DataFrame:
         """Event‑driven reactive that runs when the user clicks the button."""
 
         last_error.set(None)  # clear previous errors
+        ai_error.set(None)
+        ai_report_text.set(None)
 
         try:
             quarter_code = input.quarter()
@@ -65,10 +71,21 @@ def server(input, output, session):
             returns_df = returns_df.copy()
             returns_df["quarter"] = quarter_label
 
+            # Try to generate an AI summary using the same returns data.
+            # If the AI request fails, we keep the main app working and
+            # surface a friendly message instead of an exception.
+            try:
+                report_text = generate_ai_report(returns_df)
+                ai_report_text.set(report_text)
+            except Exception as exc:  # broad for teaching; log-friendly message
+                ai_error.set(str(exc))
+
             return returns_df
 
         except Exception as exc:  # broad for teaching; in production, be more specific
             last_error.set(str(exc))
+            ai_error.set(None)
+            ai_report_text.set(None)
             # Return an empty DataFrame so downstream render functions
             # can still run and show a friendly message.
             return pd.DataFrame(columns=["symbol", "start_date", "end_date", "return_pct", "quarter"])
@@ -100,6 +117,32 @@ def server(input, output, session):
         quarter_label = df["quarter"].iloc[0]
 
         return f"Showing quarterly returns for {symbols} in {quarter_label}."
+
+    @output
+    @render.text
+    def ai_summary() -> str:
+        """AI‑generated executive summary based on the quarterly returns."""
+
+        # Ensure we react to the same data updates as the other outputs.
+        df = returns_data()
+
+        # If the main query has not run yet, show guidance text.
+        if df.empty and last_error() is None:
+            return "Run the API query first. An AI summary will appear here once data is available."
+
+        # If there was a main error, do not show an AI summary.
+        if last_error():
+            return "AI summary unavailable because the main API query did not succeed."
+
+        # Prefer AI-specific error messages when the AI call failed.
+        if ai_error():
+            return f"⚠️ AI summary error: {ai_error()}"
+
+        report_text = ai_report_text()
+        if not report_text:
+            return "AI summary will appear here after a successful query."
+
+        return report_text
 
     @output
     @render.plot
