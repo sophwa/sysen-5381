@@ -12,4 +12,6 @@ EXPOSE 8000
 
 # Command to run your Plumber API,
 # using the image's built-in process.
-CMD ["/app/plumber.R"]
+# CMD ["/app/plumber.R"]
+
+CMD ["R", "-e", "pr <- plumber::plumb('/app/plumber.R'); pr$run(host='0.0.0.0', port=as.numeric(Sys.getenv('PORT', 8000)))"]

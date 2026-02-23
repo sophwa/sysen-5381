@@ -42,3 +42,11 @@ function(pr) {
     # Overwrite the default serializer to return unboxed JSON
     pr_set_serializer(serializer_unboxed_json())
 }
+
+if (identical(Sys.getenv("RUN_MAIN"), "true")) {
+  pr <- plumber::plumb("plumber.R")
+  pr$run(
+    host = "0.0.0.0",
+    port = as.numeric(Sys.getenv("PORT", 8000))
+  )
+}
