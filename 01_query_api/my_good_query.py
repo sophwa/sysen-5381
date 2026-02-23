@@ -8,8 +8,6 @@
 
 import requests            # for making HTTP requests
 import os                  # for reading environment variables
-import os  # for reading environment variables
-import requests  # for making HTTP requests
 from dotenv import load_dotenv  # for loading variables from .env
 
 load_dotenv(".env")
