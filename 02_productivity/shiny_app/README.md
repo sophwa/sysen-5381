@@ -53,7 +53,7 @@ The Shiny app uses `symbol`, `start_date`, `end_date`, `return_pct`, and `quarte
 - Python 3.10+ recommended.
 - A working internet connection (for API calls).
 
-From the project root (`dsai`), install the required packages:
+From the project root, install the required packages:
 
 ```bash
 pip install -r 02_productivity/shiny_app/requirements.txt
@@ -171,26 +171,6 @@ Then open the URL printed in the terminal (typically `http://localhost:8000`) in
    - **Missing API key:** Ensure `.env` exists in the project root and includes `access_key=...`.
    - **No data returned:** Check that your key is valid and that the selected symbols/quarter are supported by your Marketstack plan.
    - **AI summary error:** Ensure `.env` includes `OLLAMA_API_KEY=...` and that your Ollama key is valid. If the AI call fails, the status text will explain why.
-
----
-
-## Screenshots
-
-To fully document this app for students, add one or more screenshots to a `screenshots/` subfolder and reference them here. For example:
-
-- **Dashboard overview:**
-
-  ```markdown
-  ![Shiny app dashboard overview](screenshots/shiny_app_dashboard_overview.png)
-  ```
-
-- **Example comparison of Q4 2025 returns:**
-
-  ```markdown
-  ![Q4 2025 tech stock returns](screenshots/q4_2025_tech_returns.png)
-  ```
-
-Take screenshots after running the app with a valid API key and use descriptive filenames that match the examples above (or update the links accordingly).
 
 ---
 
