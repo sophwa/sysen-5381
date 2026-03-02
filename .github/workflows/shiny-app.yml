@@ -1,4 +1,4 @@
-name: Deploy Shiny Python App to Posit Connect
+name: Deploy my app to Posit Connect
 
 on:
   push:
