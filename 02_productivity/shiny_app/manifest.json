@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "locale": "en_US.UTF-8",
+  "metadata": {
+    "appmode": "python-shiny",
+    "entrypoint": "app"
+  },
+  "python": {
+    "version": "3.9.6",
+    "package_manager": {
+      "name": "pip",
+      "version": "25.3",
+      "package_file": "requirements.txt"
+    }
+  },
+  "files": {
+    "requirements.txt": {
+      "checksum": "6ebefa22223e532d5d608edf85ae3c2f"
+    },
+    "README.md": {
+      "checksum": "0da11740527ab66cf96243c7d5295710"
+    },
+    "ai_reporting.py": {
+      "checksum": "7ecd3672e42cf383a033d734d1e5d7d6"
+    },
+    "app.py": {
+      "checksum": "a75b39b7d614cf55db0f00ec4856038b"
+    },
+    "manifestme.sh": {
+      "checksum": "1ba673ce4a276eb94bbdc135c7544af2"
+    },
+    "server.py": {
+      "checksum": "bbf31b301e7e8ac08b209d8775e05e56"
+    },
+    "ui_components.py": {
+      "checksum": "d5924d093dcce4a9e254822908c321c2"
+    },
+    "utils.py": {
+      "checksum": "8f13a3551afd14d5d851dc40064c9143"
+    }
+  }
+}
