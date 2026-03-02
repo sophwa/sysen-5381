@@ -28,3 +28,4 @@ jobs:
           access-type: acl
           dir: 02_productivity/shiny_app
           force: false
+          show-logs: true
