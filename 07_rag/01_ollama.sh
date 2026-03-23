@@ -12,7 +12,7 @@ MODEL="smollm2:135m"  # small model, no function calling (< 200 MB)
 
 
 # Configuration
-PORT=11434  # Default Ollama port (change as needed)
+PORT=8080  # Default Ollama port (change as needed)
 # Set environment variable for port
 export OLLAMA_HOST="0.0.0.0:$PORT"
 SERVER_PID=""

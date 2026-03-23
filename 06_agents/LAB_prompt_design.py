@@ -14,6 +14,7 @@
 
 # 0. SETUP ###################################
 
+from functions import agent_run, get_shortages, df_as_text
 import os
 import sys
 import pandas as pd
@@ -21,7 +22,6 @@ import pandas as pd
 # Set working directory so relative imports work
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-from functions import agent_run, get_shortages, df_as_text
 
 MODEL = "smollm2:1.7b"   # Iteration 2: upgraded from 135m — better instruction following
 
