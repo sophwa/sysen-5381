@@ -1,0 +1,89 @@
+Energy Burden Mapper - Reference Guide
+
+ENERGY BURDEN DEFINITIONS
+
+Energy burden is defined as the percentage of gross household income spent on home energy costs, including electricity, natural gas, and other fuels.
+
+On average, a US household spends about 3% of its income on energy, but low-income households may spend 8% to 10% or more on energy costs due to lower incomes and less efficient housing.
+
+The Department of Energy (DOE) uses energy burden as a key metric to identify households and communities that may need assistance with energy costs or efficiency improvements.
+
+DOE BURDEN CLASSIFICATION CATEGORIES
+
+Affordable energy burden: less than 6% of gross household income is spent on energy costs. These households can manage energy bills without significant financial stress.
+
+High energy burden: between 6% and 10% of gross household income is spent on energy costs. Households in this category may struggle to pay energy bills and face difficult tradeoffs between energy and other necessities.
+
+Severe energy burden: greater than 10% of gross household income is spent on energy costs. These households face significant financial hardship from energy costs and are most in need of assistance programs.
+
+Low-income households are disproportionately affected by high and severe energy burden due to lower incomes combined with older, less energy-efficient housing stock.
+
+WEATHERIZATION ASSISTANCE PROGRAM (WAP)
+
+The Weatherization Assistance Program (WAP) is a federal program administered by the Department of Energy that helps low-income households reduce energy costs through energy efficiency improvements.
+
+WAP services include insulation installation, air sealing, heating and cooling system upgrades, and weatherstripping to reduce heat loss and improve overall home energy efficiency.
+
+Homes built before 1980 are especially likely to benefit from weatherization due to poor insulation, single-pane windows, and outdated heating systems that predate modern energy codes.
+
+WAP prioritizes households with high energy burden, elderly residents, young children, and people with disabilities, directing resources to those most vulnerable to energy insecurity.
+
+LOW INCOME HOME ENERGY ASSISTANCE PROGRAM (LIHEAP)
+
+LIHEAP provides federal funds to states to help low-income households pay heating and cooling energy bills, reducing the risk of utility shutoffs and health hazards from extreme temperatures.
+
+LIHEAP is administered by the Department of Health and Human Services and provides bill payment assistance to eligible households based on income, household size, and energy costs.
+
+Renters and homeowners are both eligible for LIHEAP, but renters may face additional barriers accessing the program because landlord cooperation is sometimes required for direct utility payments.
+
+HOUSING AGE AND ENERGY EFFICIENCY
+
+Pre-1980 homes are significantly less energy efficient than newer construction due to less stringent building codes and energy standards in place at the time they were built.
+
+Older homes tend to have inadequate insulation, drafty windows and doors, and inefficient heating and cooling equipment, all of which lead to higher energy consumption and costs.
+
+US Census data tracks the decade in which housing units were built, allowing analysts to identify census tracts with high concentrations of older, less efficient housing stock.
+
+In many low-income and minority communities, a large share of housing was built before 1980, contributing to persistently higher energy burden in those tracts.
+
+RENTER BURDEN AND SPLIT INCENTIVE
+
+Renters are less able to make energy efficiency improvements to their homes because they do not own the property and cannot authorize major renovations.
+
+Landlords have little financial incentive to invest in energy efficiency improvements when tenants pay the utility bills directly, a market failure known as the split incentive problem.
+
+High renter shares in a census tract combined with high energy burden strongly indicate areas where policy intervention such as renter weatherization programs or utility rate assistance is most needed.
+
+Renter-occupied units tend to have higher energy burden than owner-occupied units at similar income levels because rental housing stock is on average older and less well-maintained than owner-occupied housing.
+
+EIA ENERGY RATES
+
+The Energy Information Administration (EIA) collects and publishes average residential electricity rates in cents per kilowatt-hour by state, providing the data needed to estimate household electricity costs.
+
+The EIA also publishes average residential natural gas rates in dollars per thousand cubic feet by state, which are used alongside census heating fuel data to estimate gas heating costs.
+
+Energy rates vary significantly across states, with some states having electricity rates more than twice as high as others, creating geographic disparities in energy burden even among households with similar incomes.
+
+States with higher electricity rates, such as Hawaii and Connecticut, tend to have higher energy burden even for moderate-income households, making statewide rate data critical for accurate burden calculations.
+
+CENSUS DATA AND ENERGY BURDEN
+
+US Census Bureau data from the American Community Survey (ACS) provides tract-level estimates of median household income, housing tenure, and housing age that are essential inputs for calculating energy burden.
+
+Census tract boundaries define small geographic areas with roughly 1,200 to 8,000 residents, making them the preferred unit for identifying localized patterns of energy burden within counties and cities.
+
+Median household income at the census tract level is the primary denominator in energy burden calculations, representing the income against which estimated annual energy costs are compared.
+
+The share of housing units using natural gas versus electricity for primary heating is collected by the Census and determines which energy rate is applied to estimate heating costs in each tract.
+
+POLICY IMPLICATIONS
+
+Census tracts with severe energy burden, high renter shares, and large shares of pre-1980 housing are the highest-priority areas for weatherization programs and energy assistance funding.
+
+Energy burden mapping helps utilities design targeted low-income rate programs, identify service territories with the greatest need, and demonstrate community benefit for regulatory purposes.
+
+Local governments can use energy burden data to prioritize community development block grants, housing rehabilitation programs, and utility bill assistance for the most burdened neighborhoods.
+
+Energy burden is closely linked to housing affordability, respiratory and cardiovascular health outcomes, and economic stability for low-income households who must choose between heating and other basic needs.
+
+Climate resilience programs should prioritize communities with high energy burden to ensure that vulnerable households can afford cooling during extreme heat events and heating during winter storms.
