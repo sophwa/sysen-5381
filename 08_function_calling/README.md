@@ -60,7 +60,7 @@ Three pipelines, all using the same `agent_run()` helper in `functions.py`:
 - Agent 2 (Risk Assessor): receives Agent 1 table → classifies each event as HIGH / MODERATE / LOW based on magnitude
 - Agent 3 (Emergency Advisor): receives risk table → writes a numbered emergency response checklist
 
-**Lab 2 — Earthquake preparedness RAG (`07_rag/earthquake_rag.py`)**
+**Lab 2 — Earthquake preparedness RAG (`07_rag/LAB_earthquake_rag.py`)**
 - Single agent: searches `earthquake_preparedness.txt` for relevant paragraphs → responds as an emergency management advisor
 
 **Lab 3 — Live tool calling (`08_function_calling/LAB_multi_agent_with_tools.py`)**
@@ -112,7 +112,7 @@ Run each script from its own folder:
 cd 06_agents && python3 LAB_prompt_design.py
 
 # Lab 2 — earthquake preparedness RAG
-cd 07_rag && python3 earthquake_rag.py
+cd 07_rag && python3 LAB_earthquake_rag.py
 
 # Lab 3 — live tool calling + newsletter
 cd 08_function_calling && python3 LAB_multi_agent_with_tools.py
