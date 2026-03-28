@@ -1,0 +1,53 @@
+Earthquake Preparedness and Hazard Reference Guide
+
+Earthquake Magnitude and Intensity
+
+Earthquakes are measured by magnitude using the moment magnitude scale (Mw), which replaced the original Richter scale for larger events. A magnitude 5.0 earthquake is considered moderate and can cause minor damage to poorly constructed buildings. A magnitude 6.0 is strong and can cause significant damage in populated areas. Magnitude 7.0 and above are considered major earthquakes capable of widespread destruction. Magnitude 8.0 and above are great earthquakes that can devastate entire regions.
+
+The Modified Mercalli Intensity (MMI) scale measures the effects of shaking at a specific location, ranging from I (not felt) to XII (total destruction). A magnitude 6.5 earthquake in a densely populated area can produce MMI VII-VIII shaking, damaging unreinforced masonry buildings and causing structural failures.
+
+Earthquake Hazard Zones in the United States
+
+The most seismically active region of the contiguous United States is the West Coast, particularly California, Oregon, and Washington. The San Andreas Fault system in California is capable of producing magnitude 8.0 or greater earthquakes. The Cascadia Subduction Zone off the Pacific Northwest coast poses the threat of a magnitude 9.0 megathrust earthquake and associated tsunami.
+
+Other high-hazard zones include Alaska, which experiences the highest frequency of large earthquakes in the US, and Hawaii, which is subject to volcanic earthquakes. The New Madrid Seismic Zone in the central US (Missouri, Arkansas, Tennessee) has produced historically large earthquakes, including a series of magnitude 7-8 events in 1811-1812. The Wasatch Front in Utah and the Intermountain West also carry significant seismic risk.
+
+Building Codes and Structural Safety
+
+Modern building codes in seismically active areas require structures to withstand ground shaking without collapse, though they may sustain damage. The International Building Code (IBC) classifies structures into Seismic Design Categories A through F, with F representing the highest risk. Unreinforced masonry buildings (URM), older soft-story apartment buildings, and non-ductile concrete frames are the most vulnerable building types during strong shaking.
+
+Retrofitting programs exist for both residential and commercial structures. Soft-story retrofits involve adding shear walls or steel moment frames to ground floors of wood-frame apartment buildings. Cripple wall bracing protects older single-family homes with raised foundations. Hospital and school seismic retrofitting programs are often prioritized due to their critical roles in post-disaster response.
+
+Emergency Preparedness for Individuals and Communities
+
+The standard protective action during earthquake shaking is Drop, Cover, and Hold On. Individuals should drop to their hands and knees, take cover under a sturdy desk or table or against an interior wall away from windows, and hold on until shaking stops. Standing in a doorway is no longer recommended as protective behavior.
+
+Emergency supply kits should include at minimum: three days of water (one gallon per person per day), non-perishable food for three days, a battery-powered or hand-crank radio, a flashlight, a first aid kit, extra batteries, a whistle to signal for help, dust masks, plastic sheeting and duct tape, moist towelettes, garbage bags and plastic ties, a wrench or pliers to turn off utilities, a manual can opener, local maps, and a cell phone with chargers and backup batteries.
+
+Community preparedness includes establishing neighborhood emergency response teams (CERT), identifying local assembly points, pre-positioning emergency supplies at community centers, and conducting regular earthquake drills. Schools and businesses should have written emergency action plans and conduct annual evacuation drills.
+
+Post-Earthquake Response and Damage Assessment
+
+Immediately after a major earthquake, emergency managers activate the Incident Command System (ICS) to coordinate response across agencies. FEMA and state emergency management agencies conduct rapid needs assessments to identify the most heavily impacted areas. Search and rescue operations are prioritized in the first 72 hours, when the probability of finding survivors is highest.
+
+Damage assessment follows a standard framework: green-tagged buildings are safe to occupy, yellow-tagged buildings have restricted entry pending further inspection, and red-tagged buildings are unsafe to enter or occupy. Post-earthquake inspections are conducted by licensed structural engineers and trained safety evaluators through programs such as ATC-20.
+
+Aftershocks are a significant hazard following major earthquakes. A magnitude 7.0 earthquake can be followed by dozens of magnitude 5.0 or greater aftershocks over weeks to months. Emergency managers advise the public not to enter damaged structures until they have been inspected, as aftershocks can cause further collapse of weakened buildings.
+
+Tsunami Hazards Associated with Earthquakes
+
+Submarine earthquakes with vertical fault movement can generate tsunamis. The Pacific Ocean is particularly susceptible due to the Ring of Fire subduction zones. NOAA's National Tsunami Warning Center issues tsunami watches and warnings for the US Pacific Coast, Alaska, and Hawaii. Coastal communities in tsunami hazard zones should evacuate immediately upon strong shaking or official warnings, moving to high ground at least 100 feet above sea level or two miles inland.
+
+Tsunamis can arrive within minutes for near-source earthquakes (the Cascadia Subduction Zone could generate waves reaching the Oregon and Washington coasts within 15-30 minutes) or hours for distant-source earthquakes. The 2011 Tohoku earthquake in Japan generated a magnitude 9.0 event and tsunami that killed approximately 19,500 people and caused the Fukushima nuclear disaster.
+
+Earthquake Early Warning Systems
+
+The ShakeAlert earthquake early warning system is operational on the US West Coast, covering California, Oregon, and Washington. ShakeAlert detects the primary (P) wave from an earthquake, which travels faster than the secondary (S) wave that causes most shaking, and issues alerts seconds to tens of seconds before strong ground motion arrives. Alerts are delivered through wireless emergency alerts (WEA) on cell phones, apps such as MyShake, and automated systems that can stop trains, open fire station doors, and slow industrial equipment.
+
+Early warning does not prevent earthquakes or eliminate damage, but seconds of warning can allow people to take protective actions, trains to brake, and surgeons to pause procedures. The system's effectiveness depends on proximity to the earthquake epicenter — areas very close to the fault may receive little to no warning time.
+
+Economic Impacts of Major Earthquakes
+
+A major earthquake in a densely populated urban area can cause tens to hundreds of billions of dollars in economic losses. The 1994 Northridge earthquake (magnitude 6.7) in Los Angeles caused approximately $49 billion in damage. A hypothetical magnitude 7.8 earthquake on the southern San Andreas Fault (the ShakeOut scenario) is estimated to cause $213 billion in damage and 1,800 deaths.
+
+Business interruption losses from earthquakes often exceed direct property damage. Critical infrastructure disruption — including water, power, transportation, and telecommunications — can hamper recovery for months to years. Earthquake insurance penetration in California is approximately 10-13% of residential properties, leaving most homeowners to bear repair costs out of pocket or through federal disaster assistance programs.
