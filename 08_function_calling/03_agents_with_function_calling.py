@@ -12,6 +12,7 @@
 
 import requests  # for HTTP requests
 import json      # for working with JSON
+import ast       # for parsing Python-style strings
 import pandas as pd  # for data manipulation
 
 # If you haven't already, install these packages...
@@ -67,7 +68,10 @@ def get_table(df):
         Markdown-formatted table string
     """
     if isinstance(df, str):
-        df = pd.DataFrame(json.loads(df))
+        try:
+            df = pd.DataFrame(json.loads(df))
+        except json.JSONDecodeError:
+            df = pd.DataFrame(ast.literal_eval(df))
     elif isinstance(df, dict):
         df = pd.DataFrame(df)
     return df.to_markdown(index=False)
