@@ -54,18 +54,22 @@ def calculate_average(numbers):
 # Define another function to be used as a tool
 def get_table(df):
     """
-    Convert a pandas DataFrame into a markdown table.
-    
+    Convert a pandas DataFrame (or dict/JSON string) into a markdown table.
+
     Parameters:
     -----------
-    df : pandas.DataFrame
-        The DataFrame to convert to a markdown table
-    
+    df : pandas.DataFrame, dict, or str
+        The data to convert to a markdown table
+
     Returns:
     --------
     str
         Markdown-formatted table string
     """
+    if isinstance(df, str):
+        df = pd.DataFrame(json.loads(df))
+    elif isinstance(df, dict):
+        df = pd.DataFrame(df)
     return df.to_markdown(index=False)
 
 # 2. DEFINE TOOL METADATA ###################################
@@ -152,7 +156,7 @@ messages = [
     {"role": "user", "content": "Add 3 + 5."}
 ]
 
-resp = agent(messages=messages, model=MODEL, output="tools", tools=[tool_add_two_numbers])
+resp = agent(messages=messages, model=MODEL, output="tools", tools=[tool_add_two_numbers], func_map={"add_two_numbers": add_two_numbers})
 print("🔧 Tool Call #1 Result:")
 print(resp)
 print()
@@ -173,7 +177,7 @@ messages = [
     {"role": "user", "content": f"Place the numeric value {result_value} into a 1x1 data.frame with column name 'x' and format as a markdown table."}
 ]
 
-resp2 = agent(messages=messages, model=MODEL, output="tools", tools=[tool_get_table])
+resp2 = agent(messages=messages, model=MODEL, output="tools", tools=[tool_get_table], func_map={"get_table": get_table})
 print("🔧 Tool Call #2 Result:")
 print(resp2)
 print()
@@ -191,7 +195,7 @@ messages = [
     {"role": "user", "content": "What is the average of 10, 20, and 30?"}
 ]
 
-resp3 = agent(messages=messages, model=MODEL, output="tools", tools=[tool_calculate_average])
+resp3 = agent(messages=messages, model=MODEL, output="tools", tools=[tool_calculate_average], func_map={"calculate_average": calculate_average})
 print("🔧 Tool Call #3 Result (calculate_average):")
 print(resp3)
 print()

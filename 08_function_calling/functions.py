@@ -26,7 +26,7 @@ CHAT_URL = f"{OLLAMA_HOST}/api/chat"
 
 # 1. AGENT FUNCTION ###################################
 
-def agent(messages, model=DEFAULT_MODEL, output="text", tools=None, all=False):
+def agent(messages, model=DEFAULT_MODEL, output="text", tools=None, all=False, func_map=None):
     """
     Agent wrapper function that runs a single agent, with or without tools.
     
@@ -86,8 +86,8 @@ def agent(messages, model=DEFAULT_MODEL, output="text", tools=None, all=False):
                 raw_args = tool_call["function"].get("arguments", {})
                 func_args = json.loads(raw_args) if isinstance(raw_args, str) else raw_args
 
-                # Get the function from globals and execute it
-                func = globals().get(func_name)
+                # Get the function from func_map (caller-supplied) or globals
+                func = (func_map or {}).get(func_name) or globals().get(func_name)
                 if func:
                     result_val = func(**func_args)
                     tool_call["output"] = result_val
