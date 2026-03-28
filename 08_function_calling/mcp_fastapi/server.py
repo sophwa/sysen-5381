@@ -42,7 +42,33 @@ TOOLS = [
             },
             "required": ["dataset_name"],
         },
-    }
+    },
+    {
+        "name": "filter_dataset",
+        "description": "Filter rows from a dataset where a numeric column meets a condition. Returns matching rows as JSON.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "dataset_name": {
+                    "type": "string",
+                    "description": "Dataset to filter. Options: 'mtcars' or 'iris'.",
+                },
+                "column": {
+                    "type": "string",
+                    "description": "Name of the numeric column to filter on (e.g. 'mpg', 'Sepal.Length').",
+                },
+                "operator": {
+                    "type": "string",
+                    "description": "Comparison operator: '>', '<', '>=', '<=', or '=='.",
+                },
+                "value": {
+                    "type": "number",
+                    "description": "Numeric threshold to compare against.",
+                },
+            },
+            "required": ["dataset_name", "column", "operator", "value"],
+        },
+    },
 ]
 
 # ── Tool logic (same datasets as R: mtcars, iris via Rdatasets CSV) ──
@@ -65,6 +91,26 @@ def run_tool(name: str, args: dict) -> str:
         summary.index.name = "variable"
         summary.columns = ["mean", "sd", "min", "max"]
         return summary.reset_index().to_json(orient="records", indent=2)
+
+    if name == "filter_dataset":
+        nm = args.get("dataset_name")
+        if nm not in DATASETS:
+            raise ValueError(f"Unknown dataset: '{nm}' — choose 'mtcars' or 'iris'")
+
+        col = args.get("column")
+        op  = args.get("operator")
+        val = args.get("value")
+
+        df = DATASETS[nm]
+        if col not in df.columns:
+            raise ValueError(f"Column '{col}' not found. Available: {list(df.columns)}")
+
+        ops = {">": "__gt__", "<": "__lt__", ">=": "__ge__", "<=": "__le__", "==": "__eq__"}
+        if op not in ops:
+            raise ValueError(f"Operator '{op}' not supported. Use one of: {list(ops)}")
+
+        filtered = df[getattr(df[col], ops[op])(val)]
+        return filtered.to_json(orient="records", indent=2)
 
     raise ValueError(f"Unknown tool: {name}")
 

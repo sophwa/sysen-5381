@@ -91,6 +91,17 @@ result = mcp_request("tools/call", {
 print(result["content"][0]["text"])
 
 
+# 3b. CALL THE NEW TOOL — filter_dataset ############################
+print("# 3b. CALL THE NEW TOOL — filter_dataset ############################")
+
+# Test filter_dataset directly: mtcars rows where mpg > 25
+filter_result = mcp_request("tools/call", {
+    "name":      "filter_dataset",
+    "arguments": {"dataset_name": "mtcars", "column": "mpg", "operator": ">", "value": 25}
+})
+print("mtcars rows with mpg > 25:")
+print(filter_result["content"][0]["text"])
+
 # 4. CONNECT AN LLM TO THE MCP SERVER ####################
 print("# 4. CONNECT AN LLM TO THE MCP SERVER ####################")
 
@@ -148,7 +159,7 @@ if not ollama_is_running():
 else:
     ## 4c. Ask the LLM a question that requires the tool -----
     print("# 4c. ASK THE LLM A QUESTION THAT REQUIRES THE TOOL ####################")
-    messages = [{"role": "user", "content": "Give me a summary of the mtcars dataset."}]
+    messages = [{"role": "user", "content": "Show me all cars in mtcars with mpg greater than 25."}]
 
     body = {"model": MODEL, "messages": messages, "tools": ollama_tools, "stream": False}
     resp = requests.post(CHAT_URL, json=body)
