@@ -36,20 +36,38 @@ CHAT_URL = f"{OLLAMA_HOST}/api/chat"
 def add_two_numbers(x, y):
     """
     Add two numbers together.
-    
+
     Parameters:
     -----------
     x : float
         First number
     y : float
         Second number
-    
+
     Returns:
     --------
     float
         Sum of x and y
     """
     return x + y
+
+def multiply_numbers(x, y):
+    """
+    Multiply two numbers together.
+
+    Parameters:
+    -----------
+    x : float
+        First number
+    y : float
+        Second number
+
+    Returns:
+    --------
+    float
+        Product of x and y
+    """
+    return x * y
 
 # 2. DEFINE TOOL METADATA ###################################
 
@@ -77,18 +95,40 @@ tool_add_two_numbers = {
     }
 }
 
+tool_multiply_numbers = {
+    "type": "function",
+    "function": {
+        "name": "multiply_numbers",
+        "description": "Multiply two numbers",
+        "parameters": {
+            "type": "object",
+            "required": ["x", "y"],
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "first number"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "second number"
+                }
+            }
+        }
+    }
+}
+
 # 3. CREATE CHAT REQUEST WITH TOOLS ###################################
 
 # Create a simple chat history with a user question that will require the tool
 messages = [
-    {"role": "user", "content": "What is 3 + 2?"}
+    {"role": "user", "content": "What is 6 times 7?"}
 ]
 
 # Build the request body with tools
 body = {
     "model": MODEL,
     "messages": messages,
-    "tools": [tool_add_two_numbers],
+    "tools": [tool_add_two_numbers, tool_multiply_numbers],
     "stream": False
 }
 
