@@ -34,6 +34,23 @@ def add_two_numbers(x, y):
     """Add two numbers together."""
     return x + y
 
+# Define a function to calculate the average of a list of numbers
+def calculate_average(numbers):
+    """
+    Calculate the average (mean) of a list of numbers.
+
+    Parameters:
+    -----------
+    numbers : list of float
+        The list of numbers to average
+
+    Returns:
+    --------
+    float
+        The mean of the provided numbers
+    """
+    return sum(numbers) / len(numbers)
+
 # Define another function to be used as a tool
 def get_table(df):
     """
@@ -95,6 +112,26 @@ tool_get_table = {
     }
 }
 
+# Define the tool metadata for calculate_average
+tool_calculate_average = {
+    "type": "function",
+    "function": {
+        "name": "calculate_average",
+        "description": "Calculate the average of a list of numbers",
+        "parameters": {
+            "type": "object",
+            "required": ["numbers"],
+            "properties": {
+                "numbers": {
+                    "type": "array",
+                    "items": {"type": "number"},
+                    "description": "List of numbers to average"
+                }
+            }
+        }
+    }
+}
+
 # 3. EXAMPLE 1: STANDARD CHAT (NO TOOLS) ###################################
 
 # Trying to call a standard chat without tools
@@ -146,5 +183,21 @@ print("📊 Manual Table Creation:")
 manual_table = df.to_markdown(index=False)
 print(manual_table)
 print()
+
+# 6. EXAMPLE 4: TOOL CALL #3 ###################################
+
+# Try calling tool #3 (calculate_average)
+messages = [
+    {"role": "user", "content": "What is the average of 10, 20, and 30?"}
+]
+
+resp3 = agent(messages=messages, model=MODEL, output="tools", tools=[tool_calculate_average])
+print("🔧 Tool Call #3 Result (calculate_average):")
+print(resp3)
+print()
+
+if isinstance(resp3, list) and len(resp3) > 0:
+    print(f"Tool output: {resp3[0].get('output', 'No output')}")
+    print()
 
 # Note: We can use the agent() function to rapidly build and test out agents with or without tools.
