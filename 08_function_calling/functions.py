@@ -105,7 +105,7 @@ def agent(messages, model=DEFAULT_MODEL, output="text", tools=None, all=False, f
             return result["message"]["content"]
 
 
-def agent_run(role, task, tools=None, output="text", model=DEFAULT_MODEL):
+def agent_run(role, task, tools=None, output="text", model=DEFAULT_MODEL, func_map=None):
     """
     Run an agent with a specific role and task.
     
@@ -135,7 +135,7 @@ def agent_run(role, task, tools=None, output="text", model=DEFAULT_MODEL):
     ]
     
     # Run the agent
-    resp = agent(messages=messages, model=model, output=output, tools=tools)
+    resp = agent(messages=messages, model=model, output=output, tools=tools, func_map=func_map)
     return resp
 
 
