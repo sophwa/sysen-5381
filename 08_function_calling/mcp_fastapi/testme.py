@@ -45,9 +45,9 @@ load_dotenv()
 # 0.4 Set the server URL #################################
 # Set the server URL
 # You can use your local API (if you execut runme.py)
-# SERVER = "http://127.0.0.1:8000/mcp"
+SERVER = "http://127.0.0.1:8000/mcp"
 # Or you can use my deployed API (or update to yours), assuming you provide a Posit Connect viewer API key.
-SERVER = "https://connect.systems-apps.com/fastapimcp/mcp"
+# SERVER = "https://connect.systems-apps.com/fastapimcp/mcp"
 
 # ── Helper: send one JSON-RPC request ───────────────────────
 
