@@ -52,7 +52,7 @@ def ensure_ollama_available(max_wait_seconds: int = 15, poll_interval_seconds: f
 
 # 1. AGENT FUNCTION ###################################
 
-def agent(messages, model=DEFAULT_MODEL, output="text", tools=None, all=False):
+def agent(messages, model=DEFAULT_MODEL, output="text", tools=None, all=False, func_map=None):
     """
     Agent wrapper function that runs a single agent, with or without tools.
     
@@ -119,11 +119,10 @@ def agent(messages, model=DEFAULT_MODEL, output="text", tools=None, all=False):
                 # Keep behavior consistent with the R examples (where arguments are already structured).
                 func_args = json.loads(raw_args) if isinstance(raw_args, str) else raw_args
                 
-                # Get the function from globals and execute it
-                func = globals().get(func_name)
-                # `agent()` lives in this module, but students typically define tool functions
-                # in the *calling script* (e.g. `03_agents_with_function_calling.py`).
-                # Search up the stack to find the function in caller globals.
+                # Get the function: check func_map first, then module globals, then caller stack.
+                # func_map lets callers pass tool functions defined outside this module explicitly,
+                # which is more reliable than stack-frame inspection on some platforms.
+                func = (func_map or {}).get(func_name) or globals().get(func_name)
                 if func is None:
                     for depth in range(1, 6):  # reasonable small bound for examples
                         try:
@@ -150,7 +149,7 @@ def agent(messages, model=DEFAULT_MODEL, output="text", tools=None, all=False):
             return result["message"]["content"]
 
 
-def agent_run(role, task, tools=None, output="text", model=DEFAULT_MODEL):
+def agent_run(role, task, tools=None, output="text", model=DEFAULT_MODEL, func_map=None):
     """
     Run an agent with a specific role and task.
     
@@ -166,21 +165,24 @@ def agent_run(role, task, tools=None, output="text", model=DEFAULT_MODEL):
         Output format (default: "text")
     model : str
         Model to use (default: DEFAULT_MODEL)
-    
+    func_map : dict, optional
+        Mapping of function name -> callable for tool resolution.
+        Use this to pass tool functions defined outside functions.py.
+
     Returns:
     --------
     str
         The agent's response
     """
-    
+
     # Define the messages to be sent to the agent
     messages = [
         {"role": "system", "content": role},
         {"role": "user", "content": task}
     ]
-    
+
     # Run the agent
-    resp = agent(messages=messages, model=model, output=output, tools=tools)
+    resp = agent(messages=messages, model=model, output=output, tools=tools, func_map=func_map)
     return resp
 
 
