@@ -197,6 +197,157 @@ Write a short response (2-3 paragraphs) addressing:
 
 ---
 
+## ✏️ Completed Lab Responses
+
+### Task 1 — Chosen Agent: **Option A — The Legality Checker**
+
+**Retrieval scope:** The agent retrieves U.S. statutory code (U.S.C.), Code of Federal Regulations (C.F.R.), constitutional provisions, Supreme Court and circuit court opinions, and Office of Legal Counsel (OLC) memoranda. Documents are ranked by retrieval relevance score; only the top-k chunks (k=8) above a similarity threshold of 0.75 are passed to the context window.
+
+**Handling uncertainty:** The agent is forbidden from extrapolating beyond retrieved documents. If retrieved evidence is ambiguous or conflicting between circuits, it must say so explicitly. If no relevant document is retrieved, it must state "Outside my knowledge base" rather than reasoning from general legal principles.
+
+**Output format:** Structured JSON-compatible block with four fields: `LEGAL_ASSESSMENT`, `CITATIONS`, `CONFIDENCE`, and `RECOMMENDED_NEXT_STEP`.
+
+**Improved System Prompt:**
+
+```
+You are a legislative legal analyst AI serving congressional staff. Your sole function
+is to assess whether a proposed action is consistent with existing U.S. law, drawing
+exclusively from documents retrieved from the congressional legal database.
+
+RETRIEVAL SCOPE:
+You may only reason from documents explicitly provided in the retrieved context.
+Eligible sources: U.S. Code (U.S.C.), Code of Federal Regulations (C.F.R.),
+U.S. Constitution and amendments, Supreme Court opinions, circuit court opinions,
+and Office of Legal Counsel (OLC) memoranda.
+
+ASSESSMENT RULES:
+1. Cite every legal claim with: [SOURCE: Title, Section/Case Name, Year].
+2. Classify your assessment as exactly one of:
+   - CLEARLY LEGAL — supported by unambiguous statute or binding precedent
+   - CLEARLY ILLEGAL — contradicted by unambiguous statute or binding precedent
+   - LEGALLY UNCERTAIN — conflicting authorities, unsettled circuit split, or ambiguous text
+   - OUTSIDE MY KNOWLEDGE BASE — no relevant documents retrieved; no assessment possible
+3. Never fabricate, paraphrase, or approximate a citation. If you cannot produce an
+   exact source from the retrieved context, use OUTSIDE MY KNOWLEDGE BASE.
+4. If retrieved documents conflict with each other, describe the conflict explicitly
+   and do not resolve it — flag it for legal counsel.
+5. Do not speculate about how a court might rule. Limit analysis to what authorities say.
+
+HALLUCINATION PREVENTION:
+If the retrieved context is empty or no document scores above the relevance threshold,
+respond only with:
+"ASSESSMENT: OUTSIDE MY KNOWLEDGE BASE — No relevant legal documents were retrieved.
+Refer this question to the Office of Legal Counsel before proceeding."
+
+OUTPUT FORMAT (always use this structure):
+LEGAL ASSESSMENT: [CLEARLY LEGAL / CLEARLY ILLEGAL / LEGALLY UNCERTAIN / OUTSIDE MY KNOWLEDGE BASE]
+SUMMARY: [2-4 sentences explaining the basis for the assessment]
+CITATIONS:
+  - [SOURCE 1: full citation]
+  - [SOURCE 2: full citation]
+CONFLICTS OR GAPS: [Describe any conflicting authorities or missing documents, or "None identified"]
+CONFIDENCE: [High / Medium / Low]
+RECOMMENDED NEXT STEP: [e.g., "Proceed with standard review" / "Refer to OLC" / "Seek external legal opinion"]
+```
+
+---
+
+### Task 2 — Architecture Diagram
+
+**Design question answers:**
+
+- **[x] Chunking strategy:** Documents are split into overlapping 512-token chunks with 64-token overlap, preserving section boundaries (e.g., statute subsections, opinion paragraphs). Each chunk also stores a one-paragraph summary generated at ingest time. The agent receives retrieved chunks, not summaries — summaries are used only to improve embedding quality at ingest.
+- **[x] Access control:** Row Level Security (RLS) in Supabase/PostgreSQL. Each document row carries a `clearance_level` column (`public`, `staff`, `classified`). RLS policies evaluate the user's JWT claim (`clearance_level`) against the document's level; rows above clearance are invisible to the query — they return zero results, not an error.
+- **[x] Databases:** Vectors stored in **pgvector** (hosted in Supabase). Raw documents stored in **AWS S3** with object-level tagging matching the RLS clearance tiers; presigned URLs are generated only after RLS confirms access.
+- **[x] What the agent sees:** Retrieved chunks and their metadata (source title, section, date, clearance tier). The agent never sees raw PDFs or full documents — only the top-k chunks returned by the vector similarity search after RLS filtering.
+- **[x] Clearance violation handling:** The query never reaches filtered rows. If all relevant chunks are above the user's clearance, the vector search returns zero results. The agent then uses its "no retrieved documents" fallback: outputs `OUTSIDE MY KNOWLEDGE BASE` and directs the user to escalate through proper channels.
+
+```mermaid
+flowchart TD
+    A["Document Ingest
+    Statutes · Case Law · OLC Memos
+    Regulations · Constitutional Text"] --> B
+
+    B["Preprocessor
+    OCR · Section boundary detection
+    Metadata tagging: source · date · clearance_level"] --> C
+
+    C["Chunker
+    512-token overlapping chunks
+    64-token overlap, section-aware
+    + one-paragraph summary per chunk"] --> D
+
+    D["Embedder
+    text-embedding-3-large
+    OpenAI / Azure OpenAI endpoint"] --> E
+
+    B --> F
+
+    E --> G[("pgvector — Supabase
+    Chunk vectors + metadata
+    clearance_level: public | staff | classified
+    RLS policy: JWT claim ≥ doc clearance")]
+
+    F[("S3 Raw Document Store
+    Original PDFs + source files
+    Object tags: clearance_level
+    Presigned URL gated by RLS result")]
+
+    G --> H{"Access Control Gate
+    RLS policy evaluates:
+    user JWT clearance_level
+    vs. document clearance_level"}
+
+    F --> H
+
+    H -->|"Clearance OK
+    (JWT ≥ doc level)"| I
+
+    H -->|"Clearance DENIED
+    (JWT < doc level)"| J["Blocked — Zero rows returned
+    Agent receives empty context
+    → outputs: OUTSIDE MY KNOWLEDGE BASE
+    → instructs user to escalate"]
+
+    I["Agent Layer
+    Claude Sonnet / GPT-4o
+    Context: top-8 chunks above 0.75 similarity
+    Cannot access raw docs or full text
+    Governed by Legality Checker system prompt"]
+
+    I --> K["Legal Assessment Output
+    ASSESSMENT · CITATIONS · CONFIDENCE
+    RECOMMENDED NEXT STEP"]
+
+    K --> L["Staff Interface
+    Web UI · Slack bot · REST API
+    Audit log: query · user · timestamp · clearance"]
+
+    subgraph Clearance Tiers
+        T1["PUBLIC
+        Published U.S.C. · SCOTUS opinions
+        C.F.R. · Congressional Record"]
+        T2["STAFF
+        Draft legislation · Internal memos
+        Constituent correspondence · OLC drafts"]
+        T3["CLASSIFIED
+        Intelligence-informed briefings
+        Classified committee materials"]
+    end
+```
+
+---
+
+### Task 3 — Justification
+
+**Access control rationale.** Row Level Security (RLS) enforced at the database layer was chosen over prompt-level instructions because it eliminates an entire category of failure. A system prompt that instructs an agent to "not discuss classified documents" still requires the model to see those documents and then choose not to discuss them — a choice that can be overridden by jailbreaks, prompt injection in retrieved content, or simply model error. RLS means classified rows are never returned by the query; they are invisible to the agent before any model processing occurs. This is a structural guarantee, not a behavioral one, and structural guarantees do not hallucinate. API key tiers were considered but rejected because they require application-layer enforcement, which reintroduces the model-as-gatekeeper problem if the application layer is misconfigured.
+
+**Biggest failure mode.** The most dangerous failure in this system is a plausible-sounding but fabricated legal citation — a hallucinated statute number or misattributed court opinion that staff accept as authoritative and act upon. This risk is highest when the correct documents are not in the retrieval database (e.g., a recent ruling not yet ingested), because the model's training data may contain related legal concepts and it may confabulate a citation rather than admit ignorance. Mitigations are layered: (1) the system prompt absolutely prohibits inference from training memory and requires verbatim citation from retrieved context; (2) a similarity-score threshold of 0.75 ensures the agent only proceeds when genuinely relevant documents are found; (3) all outputs are flagged with a `CONFIDENCE` level and a `RECOMMENDED NEXT STEP` that defaults to "Refer to OLC" under any uncertainty; and (4) all queries and responses are audit-logged so staff can identify systematic failures over time.
+
+**Connection to readings.** This design reflects Fagan's argument that AI systems in high-stakes institutional contexts require not just performance optimization but failure-mode engineering — the question is not only "how often does it get the right answer?" but "what does it do when it is wrong, and how visible is that failure?" The Legality Checker is deliberately designed so that its failure state (OUTSIDE MY KNOWLEDGE BASE, refer to OLC) is safe and conservative rather than confidently wrong. Similarly, the narrow scope of the agent — legal assessment only, no drafting, no negotiation advice — follows the principle that tightly scoped agents with well-defined failure boundaries outperform broad agents that attempt more and fail in less predictable ways.
+
+---
+
 
 
 ![](../docs/images/icons.png)
