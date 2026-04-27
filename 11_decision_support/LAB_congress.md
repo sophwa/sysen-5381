@@ -199,55 +199,54 @@ Write a short response (2-3 paragraphs) addressing:
 
 ## ✏️ Completed Lab Responses
 
-### Task 1 — Chosen Agent: **Option A — The Legality Checker**
+### Task 1 — Chosen Agent: **Option C — The Plain Language Translator**
 
-**Retrieval scope:** The agent retrieves U.S. statutory code (U.S.C.), Code of Federal Regulations (C.F.R.), constitutional provisions, Supreme Court and circuit court opinions, and Office of Legal Counsel (OLC) memoranda. Documents are ranked by retrieval relevance score; only the top-k chunks (k=8) above a similarity threshold of 0.75 are passed to the context window.
+**Handling technical terms:** The agent must never silently drop or substitute a term with no plain-language equivalent. Instead it preserves the original term in parentheses alongside the simplified version (e.g., "the right to challenge your detention in court (habeas corpus)") and appends a `[NUANCE WARNING]` when the simplification risks altering the legal or policy meaning.
 
-**Handling uncertainty:** The agent is forbidden from extrapolating beyond retrieved documents. If retrieved evidence is ambiguous or conflicting between circuits, it must say so explicitly. If no relevant document is retrieved, it must state "Outside my knowledge base" rather than reasoning from general legal principles.
+**Signaling meaning loss:** The agent uses two explicit markers: `[NUANCE WARNING: ...]` for clauses where simplification may distort meaning, and `[OMISSION NOTE: ...]` when a provision is collapsed or summarized rather than translated in full. It never silently omit content.
 
-**Output format:** Structured JSON-compatible block with four fields: `LEGAL_ASSESSMENT`, `CITATIONS`, `CONFIDENCE`, and `RECOMMENDED_NEXT_STEP`.
+**Output format:** Three clearly labeled sections — `ORIGINAL` (block quote), `PLAIN LANGUAGE TRANSLATION`, and `NUANCE WARNINGS / OMISSION NOTES` — with a reading-level tag at the top.
 
 **Improved System Prompt:**
 
 ```
-You are a legislative legal analyst AI serving congressional staff. Your sole function
-is to assess whether a proposed action is consistent with existing U.S. law, drawing
-exclusively from documents retrieved from the congressional legal database.
+You are a plain language translation assistant for congressional staff and constituents.
+Your job is to translate legislative or regulatory text into clear, accessible language
+at a specified reading level.
 
-RETRIEVAL SCOPE:
-You may only reason from documents explicitly provided in the retrieved context.
-Eligible sources: U.S. Code (U.S.C.), Code of Federal Regulations (C.F.R.),
-U.S. Constitution and amendments, Supreme Court opinions, circuit court opinions,
-and Office of Legal Counsel (OLC) memoranda.
+INPUT:
+- The text to translate (provided by the user)
+- Target reading level (default: 8th grade unless the user specifies otherwise)
 
-ASSESSMENT RULES:
-1. Cite every legal claim with: [SOURCE: Title, Section/Case Name, Year].
-2. Classify your assessment as exactly one of:
-   - CLEARLY LEGAL — supported by unambiguous statute or binding precedent
-   - CLEARLY ILLEGAL — contradicted by unambiguous statute or binding precedent
-   - LEGALLY UNCERTAIN — conflicting authorities, unsettled circuit split, or ambiguous text
-   - OUTSIDE MY KNOWLEDGE BASE — no relevant documents retrieved; no assessment possible
-3. Never fabricate, paraphrase, or approximate a citation. If you cannot produce an
-   exact source from the retrieved context, use OUTSIDE MY KNOWLEDGE BASE.
-4. If retrieved documents conflict with each other, describe the conflict explicitly
-   and do not resolve it — flag it for legal counsel.
-5. Do not speculate about how a court might rule. Limit analysis to what authorities say.
-
-HALLUCINATION PREVENTION:
-If the retrieved context is empty or no document scores above the relevance threshold,
-respond only with:
-"ASSESSMENT: OUTSIDE MY KNOWLEDGE BASE — No relevant legal documents were retrieved.
-Refer this question to the Office of Legal Counsel before proceeding."
+TRANSLATION RULES:
+1. Match the requested reading level as closely as possible. Use shorter sentences,
+   common words, and active voice. Do not use legal jargon without explanation.
+2. When a legal or technical term has no plain-language equivalent, keep the original
+   term in parentheses after your simplified version.
+   Example: "the right to challenge your detention in court (habeas corpus)"
+3. Preserve the legal meaning as accurately as possible. Do not interpret, opine, or
+   predict how a provision might be applied — only translate what the text says.
+4. For every clause where simplification may distort the legal or policy meaning,
+   insert a [NUANCE WARNING: brief explanation of what may be lost].
+5. If a provision is too complex to translate at the target reading level without
+   losing essential meaning, translate it as best you can and add:
+   [OMISSION NOTE: this section was simplified — the full legal text governs].
+6. Never silently drop a sentence, clause, or definition. Account for every provision,
+   even if only to note it was collapsed.
+7. Do not add information, context, or examples that are not in the source text.
 
 OUTPUT FORMAT (always use this structure):
-LEGAL ASSESSMENT: [CLEARLY LEGAL / CLEARLY ILLEGAL / LEGALLY UNCERTAIN / OUTSIDE MY KNOWLEDGE BASE]
-SUMMARY: [2-4 sentences explaining the basis for the assessment]
-CITATIONS:
-  - [SOURCE 1: full citation]
-  - [SOURCE 2: full citation]
-CONFLICTS OR GAPS: [Describe any conflicting authorities or missing documents, or "None identified"]
-CONFIDENCE: [High / Medium / Low]
-RECOMMENDED NEXT STEP: [e.g., "Proceed with standard review" / "Refer to OLC" / "Seek external legal opinion"]
+READING LEVEL: [e.g., 8th grade]
+---
+ORIGINAL:
+> [paste source text as block quote]
+
+PLAIN LANGUAGE TRANSLATION:
+[your translation here, with inline [NUANCE WARNING] and [OMISSION NOTE] markers]
+
+NUANCE WARNINGS AND OMISSION NOTES:
+- [list each warning/note with the relevant clause for easy staff review]
+  (write "None" if the translation is complete and faithful)
 ```
 
 ---
@@ -256,26 +255,25 @@ RECOMMENDED NEXT STEP: [e.g., "Proceed with standard review" / "Refer to OLC" / 
 
 **Design question answers:**
 
-- **[x] Chunking strategy:** Documents are split into overlapping 512-token chunks with 64-token overlap, preserving section boundaries (e.g., statute subsections, opinion paragraphs). Each chunk also stores a one-paragraph summary generated at ingest time. The agent receives retrieved chunks, not summaries — summaries are used only to improve embedding quality at ingest.
-- **[x] Access control:** Row Level Security (RLS) in Supabase/PostgreSQL. Each document row carries a `clearance_level` column (`public`, `staff`, `classified`). RLS policies evaluate the user's JWT claim (`clearance_level`) against the document's level; rows above clearance are invisible to the query — they return zero results, not an error.
-- **[x] Databases:** Vectors stored in **pgvector** (hosted in Supabase). Raw documents stored in **AWS S3** with object-level tagging matching the RLS clearance tiers; presigned URLs are generated only after RLS confirms access.
-- **[x] What the agent sees:** Retrieved chunks and their metadata (source title, section, date, clearance tier). The agent never sees raw PDFs or full documents — only the top-k chunks returned by the vector similarity search after RLS filtering.
-- **[x] Clearance violation handling:** The query never reaches filtered rows. If all relevant chunks are above the user's clearance, the vector search returns zero results. The agent then uses its "no retrieved documents" fallback: outputs `OUTSIDE MY KNOWLEDGE BASE` and directs the user to escalate through proper channels.
+- **[x] Chunking strategy:** Documents are split by logical unit — bills by section, regulations by paragraph, constituent letters by message. Each chunk stores the full text of that unit plus a short plain-English summary generated at ingest (used to improve embedding quality, not shown to the agent). The agent receives the full retrieved chunks so it can translate the complete original text without gaps.
+- **[x] Access control:** Row Level Security (RLS) in Supabase/PostgreSQL. Each document row carries a `clearance_level` column (`public`, `staff`, `classified`). RLS policies compare the user's JWT claim against the document's clearance level; rows above the user's clearance are never returned. For the Plain Language Translator specifically, most source documents will be public (published bills, regulations), but internal drafts and constituent letters require staff or higher clearance.
+- **[x] Databases:** Vectors stored in **pgvector** (hosted in Supabase). Raw documents stored in **AWS S3** with object-level clearance tags; the agent receives the text content of retrieved chunks, not presigned URLs to raw files.
+- **[x] What the agent sees:** Full text of retrieved chunks (the original legislative or regulatory language), plus metadata (document title, section number, clearance tier, date). The agent needs the verbatim source text to translate accurately — it does not receive summaries.
+- **[x] Clearance violation handling:** RLS filters inaccessible rows before the vector search result reaches the agent. If a user submits text that originated from a classified document and no matching chunks are returned at their clearance level, the agent translates only the text explicitly provided in the user's input and notes that it cannot retrieve additional context.
 
 ```mermaid
 flowchart TD
     A["Document Ingest
-    Statutes · Case Law · OLC Memos
-    Regulations · Constitutional Text"] --> B
+    Bills · Regulations · Committee Reports
+    Constituent Letters · Agency Guidance"] --> B
 
     B["Preprocessor
-    OCR · Section boundary detection
-    Metadata tagging: source · date · clearance_level"] --> C
+    OCR · Section / paragraph boundary detection
+    Metadata tagging: title · section · date · clearance_level"] --> C
 
     C["Chunker
-    512-token overlapping chunks
-    64-token overlap, section-aware
-    + one-paragraph summary per chunk"] --> D
+    Split by logical unit: section / paragraph / message
+    Store full text + short ingest-time summary per chunk"] --> D
 
     D["Embedder
     text-embedding-3-large
@@ -284,55 +282,49 @@ flowchart TD
     B --> F
 
     E --> G[("pgvector — Supabase
-    Chunk vectors + metadata
+    Chunk vectors + full chunk text + metadata
     clearance_level: public | staff | classified
-    RLS policy: JWT claim ≥ doc clearance")]
+    RLS policy: JWT claim ≥ doc clearance_level")]
 
     F[("S3 Raw Document Store
     Original PDFs + source files
-    Object tags: clearance_level
-    Presigned URL gated by RLS result")]
+    Object tags: clearance_level")]
 
     G --> H{"Access Control Gate
-    RLS policy evaluates:
-    user JWT clearance_level
+    RLS: evaluate JWT clearance_level
     vs. document clearance_level"}
 
-    F --> H
-
-    H -->|"Clearance OK
-    (JWT ≥ doc level)"| I
-
+    H -->|"Clearance OK"| I
     H -->|"Clearance DENIED
-    (JWT < doc level)"| J["Blocked — Zero rows returned
-    Agent receives empty context
-    → outputs: OUTSIDE MY KNOWLEDGE BASE
-    → instructs user to escalate"]
+    (zero rows returned)"| J["Agent receives only
+    user-submitted text
+    Adds note: additional context unavailable
+    at current clearance level"]
 
     I["Agent Layer
     Claude Sonnet / GPT-4o
-    Context: top-8 chunks above 0.75 similarity
-    Cannot access raw docs or full text
-    Governed by Legality Checker system prompt"]
+    Context: full text of retrieved chunks
+    + user-specified reading level
+    Governed by Plain Language Translator prompt"]
 
-    I --> K["Legal Assessment Output
-    ASSESSMENT · CITATIONS · CONFIDENCE
-    RECOMMENDED NEXT STEP"]
+    I --> K["Translation Output
+    READING LEVEL · ORIGINAL · PLAIN LANGUAGE
+    NUANCE WARNINGS · OMISSION NOTES"]
 
-    K --> L["Staff Interface
+    K --> L["Staff / Constituent Interface
     Web UI · Slack bot · REST API
-    Audit log: query · user · timestamp · clearance"]
+    Audit log: input · output · user · reading level"]
 
     subgraph Clearance Tiers
         T1["PUBLIC
-        Published U.S.C. · SCOTUS opinions
-        C.F.R. · Congressional Record"]
+        Published bills · C.F.R. · Congressional Record
+        Enacted statutes · Public agency guidance"]
         T2["STAFF
-        Draft legislation · Internal memos
-        Constituent correspondence · OLC drafts"]
+        Draft legislation · Internal policy memos
+        Constituent correspondence · Committee drafts"]
         T3["CLASSIFIED
-        Intelligence-informed briefings
-        Classified committee materials"]
+        Classified briefing materials
+        Intelligence committee documents"]
     end
 ```
 
@@ -340,11 +332,11 @@ flowchart TD
 
 ### Task 3 — Justification
 
-**Access control rationale.** Row Level Security (RLS) enforced at the database layer was chosen over prompt-level instructions because it eliminates an entire category of failure. A system prompt that instructs an agent to "not discuss classified documents" still requires the model to see those documents and then choose not to discuss them — a choice that can be overridden by jailbreaks, prompt injection in retrieved content, or simply model error. RLS means classified rows are never returned by the query; they are invisible to the agent before any model processing occurs. This is a structural guarantee, not a behavioral one, and structural guarantees do not hallucinate. API key tiers were considered but rejected because they require application-layer enforcement, which reintroduces the model-as-gatekeeper problem if the application layer is misconfigured.
+**Access control rationale.** RLS at the database layer was chosen over prompt-level access rules for the same structural reason it is the right choice for any of these agents: an instruction to "not translate classified documents" still exposes those documents to the model before it decides not to act on them. RLS means classified rows are invisible to the query entirely. For the Plain Language Translator specifically this matters even more than it might seem, because translation is a low-stakes-sounding task — a user might not realize they are requesting access to restricted content. The clearance gate needs to operate before the agent ever sees the source text, not after. For most use cases the translator will work entirely with public documents (published bills, the C.F.R., enacted statutes), but constituent letters and internal draft legislation require staff-level access, so the tiered system must be in place from the start.
 
-**Biggest failure mode.** The most dangerous failure in this system is a plausible-sounding but fabricated legal citation — a hallucinated statute number or misattributed court opinion that staff accept as authoritative and act upon. This risk is highest when the correct documents are not in the retrieval database (e.g., a recent ruling not yet ingested), because the model's training data may contain related legal concepts and it may confabulate a citation rather than admit ignorance. Mitigations are layered: (1) the system prompt absolutely prohibits inference from training memory and requires verbatim citation from retrieved context; (2) a similarity-score threshold of 0.75 ensures the agent only proceeds when genuinely relevant documents are found; (3) all outputs are flagged with a `CONFIDENCE` level and a `RECOMMENDED NEXT STEP` that defaults to "Refer to OLC" under any uncertainty; and (4) all queries and responses are audit-logged so staff can identify systematic failures over time.
+**Biggest failure mode.** The single greatest risk is a translation that quietly alters the legal meaning of a provision without triggering a `[NUANCE WARNING]` — what might be called a silent distortion. This is especially dangerous for conditional clauses ("unless," "except where," "notwithstanding"), defined terms whose plain-English equivalent is subtly broader or narrower, and cross-references to other sections that the translation collapses. A staffer or constituent who reads the plain-language version and acts on it may be operating under a misunderstanding of what the law actually requires. Mitigations include: (1) the system prompt requires the agent to account for every provision and never silently drop clauses; (2) legal and technical terms must always appear alongside their simplified version rather than being replaced; (3) every translation output includes a dedicated `NUANCE WARNINGS AND OMISSION NOTES` section that staff must review before sharing with constituents; and (4) the interface labels outputs clearly as AI-generated translations, not legal interpretations.
 
-**Connection to readings.** This design reflects Fagan's argument that AI systems in high-stakes institutional contexts require not just performance optimization but failure-mode engineering — the question is not only "how often does it get the right answer?" but "what does it do when it is wrong, and how visible is that failure?" The Legality Checker is deliberately designed so that its failure state (OUTSIDE MY KNOWLEDGE BASE, refer to OLC) is safe and conservative rather than confidently wrong. Similarly, the narrow scope of the agent — legal assessment only, no drafting, no negotiation advice — follows the principle that tightly scoped agents with well-defined failure boundaries outperform broad agents that attempt more and fail in less predictable ways.
+**Connection to readings.** This design reflects the concern raised by Hao and others that AI systems deployed in institutional contexts tend to create a false sense of confidence in their outputs. Plain language translation feels low-risk — it is "just rewording" — but the gap between a translation that is readable and one that is accurate is precisely where harm enters. The output format is designed to resist that false confidence: the original text is always present alongside the translation, every simplification that risks distortion is flagged, and the system makes its limitations visible rather than hiding them in a smooth-sounding summary. Consistent with the principle that narrow, reliable agents outperform broad ones, this agent does only translation — it does not assess legality, make policy recommendations, or synthesize across documents — which keeps its failure modes predictable and auditable.
 
 ---
 
